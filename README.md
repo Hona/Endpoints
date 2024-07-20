@@ -24,3 +24,37 @@ app.MapEndpoints();
 ```
 
 That's it.
+
+## Extensions
+
+This GitHub repo also contains the Mediator extensions for Hona.Endpoints.
+
+Add the `Hona.Endpoints.Extensions.Mediator` NuGet package.
+
+With the Mediator extensions, you can easily define endpoints that use REPR over Mediator.
+
+```csharp
+endpoints
+    .MapCommandPost<Request, Response>("/todos")
+    .WithTags("Todos")
+    .WithDescription("Create a new todo, somehow.")
+    .AllowAnonymous();
+```
+
+without the extensions, you would have to do this:
+
+```csharp
+endpoints
+    .MapPost(
+        "/todos",
+        (
+            Mediator.Mediator mediator,
+            CancellationToken cancellationToken,
+            [FromBody] Request request
+        ) => mediator.Send(request, cancellationToken)
+    )
+    .Produces<Response>((int)HttpStatusCode.Created)
+    .WithTags("Todos")
+    .WithDescription("Create a new todo, somehow.")
+    .AllowAnonymous();
+```
